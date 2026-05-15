@@ -11,7 +11,6 @@ const usuarioActivo = useUsuarioStore()
 const rightDrawerOpen = ref(false)
 const $q = useQuasar()
 
-
 function toggleRightDrawer() {
   rightDrawerOpen.value = !rightDrawerOpen.value
 }
@@ -24,31 +23,37 @@ async function cerrarSesion() {
     persistent: true,
     ok: { label: 'Cerrar', color: 'negative', flat: true },
   }).onOk(async () => {
-
-  usuarioStore.setUsuario(null)
-  localStorage.removeItem('usuario_dish')
-  router.replace({ name: 'login' })
-  // Al salir, redirige a login
-  }
-)}
-
+    usuarioStore.setUsuario(null)
+    localStorage.removeItem('usuario_dish')
+    router.replace({ name: 'login' })
+    // Al salir, redirige a login
+  })
+}
 </script>
 
 <template>
   <q-layout view="hhh lpR fFf">
-    <q-header reveal elevated class="bg-deep-purple-1
- text-white">
+    <q-header reveal elevated class="bg-deep-purple-1 text-white">
       <q-toolbar>
-        <q-toolbar-title><img src="/MDish.svg" alt="icono" style="height: 45px; vertical-align: middle;">
+        <q-toolbar-title
+          ><img src="/MDish.svg" alt="icono" style="height: 45px; vertical-align: middle" />
         </q-toolbar-title>
-        <q-btn size="18px" dense flat round icon="menu" color="deep-purple-10" @click="toggleRightDrawer" />
+        <q-btn
+          size="18px"
+          dense
+          flat
+          round
+          icon="menu"
+          color="deep-purple-10"
+          @click="toggleRightDrawer"
+        />
       </q-toolbar>
     </q-header>
 
     <q-drawer show-if-above v-model="rightDrawerOpen" side="right">
       <template v-if="!usuarioActivo.usuario">
         <!-- * Cabecera sin login -->
-        <q-list style="min-width: 10px" class="text ">
+        <q-list style="min-width: 10px" class="text">
           <q-item clickable v-close-popup to="/">
             <q-item-section>Inicio</q-item-section>
           </q-item>

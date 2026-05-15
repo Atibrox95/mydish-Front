@@ -14,11 +14,11 @@ const esContraseña = ref(true)
 const esContraseñaConfirm = ref(true)
 const $q = useQuasar()
 
-// Modo Edición: detectamos si hay un usuario cargado en el store
+// Comprobamos si hay un usuario en el store
 const esEdicion = computed(() => !!usuarioStore.usuario?.correo)
 
 const usuario = ref({
-  idUsuario: null, // Importante para la edición
+  idUsuario: null,
   nombre: '',
   apellidos: '',
   correo: '',
@@ -34,7 +34,7 @@ onMounted(() => {
   if (esEdicion.value) {
     usuario.value = {
       ...usuario.value,
-      idUsuario: usuarioStore.usuario.idUsuario, // Cargamos el ID
+      idUsuario: usuarioStore.usuario.idUsuario,
       nombre: usuarioStore.usuario.nombre,
       apellidos: usuarioStore.usuario.apellidos,
       correo: usuarioStore.usuario.correo,
@@ -51,11 +51,11 @@ const deshabilitado = computed(() => {
   const u = usuario.value
   const original = usuarioStore.usuario
 
-  // Verificación básica de campos obligatorios
+  // Verificamos campos obligatorios
   const camposCompletos = u.nombre && u.apellidos && u.correo && u.fechaNacimiento
 
   if (esEdicion.value) {
-    // Detectar si el usuario ha modificado algún valor respecto al store
+    // Comprobamos si el usuario ha modificado algún dato
     const haCambiadoAlgo =
       u.nombre !== original.nombre ||
       u.apellidos !== original.apellidos ||
@@ -64,11 +64,10 @@ const deshabilitado = computed(() => {
       u.altura !== original.altura ||
       u.nuevaContraseña !== ''
 
-    // En edición, si la contraseña está vacía no pasa nada, pero si escribe algo debe coincidir con la confirmación
+    // Si la contraseña está vacía no pasa nada, pero si escribe algo debe coincidir con la confirmación
     const contraseñaValida =
       !u.nuevaContraseña || u.nuevaContraseña === comprobacionContraseña.value
 
-    // Se deshabilita si: NO ha cambiado nada O faltan campos O la contraseña no es válida
     return !(haCambiadoAlgo && camposCompletos && contraseñaValida)
   }
 
@@ -87,7 +86,7 @@ async function guardar() {
       if (usuario.value.nuevaContraseña) {
         usuario.value.contraseña = usuario.value.nuevaContraseña
       }
-      // Pasamos el ID y el objeto (Exactamente como pide tu service: idUsuario, usuarioDto)
+      // Pasamos el ID y el objeto
       respuesta = await usuariosService.actualizar(usuario.value.idUsuario, usuario.value)
     } else {
       respuesta = await usuariosService.registro(usuario.value)
@@ -159,38 +158,104 @@ async function eliminarCuenta() {
       <q-form class="full-width flex flex-center" @submit="guardar">
         <div class="form-card column q-gutter-y-md">
           <div class="column q-gutter-y-sm">
-            <q-input v-model="usuario.nombre" rounded filled label="Nombre" bg-color="white" color="purple"
-              :rules="[(val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras']" />
-            <q-input v-model="usuario.apellidos" rounded filled label="Apellidos" bg-color="white" color="purple"
-              :rules="[(val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras']" />
-            <q-input v-model="usuario.correo" rounded filled label="Correo" :disable="esEdicion" bg-color="white"
-              color="purple" lazy-rules
-              :rules="[(val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Correo no válido']" />
+            <q-input
+              v-model="usuario.nombre"
+              rounded
+              filled
+              label="Nombre"
+              bg-color="white"
+              color="purple"
+              :rules="[(val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras']"
+            />
+            <q-input
+              v-model="usuario.apellidos"
+              rounded
+              filled
+              label="Apellidos"
+              bg-color="white"
+              color="purple"
+              :rules="[(val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras']"
+            />
+            <q-input
+              v-model="usuario.correo"
+              rounded
+              filled
+              label="Correo"
+              :disable="esEdicion"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[(val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Correo no válido']"
+            />
 
-            <q-input v-model="usuario.nuevaContraseña" :type="esContraseña ? 'password' : 'text'" rounded filled
-              :label="esEdicion ? 'Nueva Contraseña (opcional)' : 'Contraseña'" bg-color="white" color="purple"
-              lazy-rules :rules="[
-                (val) =>
-                  /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(val) ||
-                  'Debe tener 8 caracteres, una mayúscula, un número y un símbolo',
-              ]">
+            <q-input
+              v-model="usuario.nuevaContraseña"
+              :type="esContraseña ? 'password' : 'text'"
+              rounded
+              filled
+              :label="esEdicion ? 'Nueva Contraseña (opcional)' : 'Contraseña'"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[
+                (val) => {
+                  if (!val) {
+                    return true
+                  }
+                  return (
+                    /^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=!._-])(?=\S+$).{8,}$/.test(
+                      val,
+                    ) || 'Debe tener 8 caracteres, una mayúscula, un número y un símbolo'
+                  )
+                },
+              ]"
+            >
               <template #append>
-                <q-icon :name="esContraseña ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="esContraseña = !esContraseña" />
+                <q-icon
+                  :name="esContraseña ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="esContraseña = !esContraseña"
+                />
               </template>
             </q-input>
 
-            <q-input v-model="comprobacionContraseña" :type="esContraseñaConfirm ? 'password' : 'text'" rounded filled
-              label="Confirmar contraseña" bg-color="white" color="purple" lazy-rules
-              :rules="[(val) => val === usuario.contraseña || 'Las contraseñas no coinciden']">
+            <q-input
+              v-model="comprobacionContraseña"
+              :type="esContraseñaConfirm ? 'password' : 'text'"
+              rounded
+              filled
+              label="Confirmar contraseña"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[
+                (val) => {
+                  if (!usuario.nuevaContraseña) {
+                    return true
+                  }
+                  console.log(val)
+                  console.log(usuario.nuevaContraseña)
+                  return val === usuario.nuevaContraseña || 'Las contraseñas no coinciden'
+                },
+              ]"
+            >
               <template #append>
-                <q-icon :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="esContraseñaConfirm = !esContraseñaConfirm" />
+                <q-icon
+                  :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="esContraseñaConfirm = !esContraseñaConfirm"
+                />
               </template>
             </q-input>
 
-            <q-input rounded filled v-model="usuario.fechaNacimiento" label="Fecha Nacimiento" bg-color="white"
-              color="purple">
+            <q-input
+              rounded
+              filled
+              v-model="usuario.fechaNacimiento"
+              label="Fecha Nacimiento"
+              bg-color="white"
+              color="purple"
+            >
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -204,18 +269,47 @@ async function eliminarCuenta() {
               </template>
             </q-input>
 
-            <q-input v-model.number="usuario.peso" type="number" rounded filled label="Peso (kg)" bg-color="white"
-              color="purple" />
+            <q-input
+              v-model.number="usuario.peso"
+              type="number"
+              rounded
+              filled
+              label="Peso (kg)"
+              bg-color="white"
+              color="purple"
+            />
 
-            <q-input v-model.number="usuario.altura" type="number" rounded filled label="Altura (cm)" bg-color="white"
-              color="purple" />
+            <q-input
+              v-model.number="usuario.altura"
+              type="number"
+              rounded
+              filled
+              label="Altura (cm)"
+              bg-color="white"
+              color="purple"
+            />
           </div>
 
-          <q-btn :class="[!deshabilitado ? 'boton-activo' : 'boton-inactivo']" type="submit"
-            :label="esEdicion ? 'Guardar Cambios' : 'Registrarse'" rounded size="lg" no-caps class="full-width" />
+          <q-btn
+            :class="[!deshabilitado ? 'boton-activo' : 'boton-inactivo']"
+            type="submit"
+            :label="esEdicion ? 'Guardar Cambios' : 'Registrarse'"
+            rounded
+            size="lg"
+            no-caps
+            class="full-width"
+          />
 
-          <q-btn v-if="esEdicion" label="Eliminar Cuenta" color="negative" flat rounded no-caps
-            class="full-width q-mt-sm" @click="eliminarCuenta" />
+          <q-btn
+            v-if="esEdicion"
+            label="Eliminar Cuenta"
+            color="negative"
+            flat
+            rounded
+            no-caps
+            class="full-width q-mt-sm"
+            @click="eliminarCuenta"
+          />
         </div>
       </q-form>
     </div>

@@ -5,7 +5,6 @@ import { useUsuarioStore } from '../../stores/usuarioStore'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
-
 const router = useRouter()
 const aceptarTerminos = ref(false)
 const usuarioStore = useUsuarioStore()
@@ -18,14 +17,20 @@ const usuario = ref({
   apellidos: '',
   correo: '',
   contraseña: '',
-  fechaNacimiento: ''
+  fechaNacimiento: '',
 })
 
 const deshabilitado = computed(() => {
   const u = unref(usuario)
-  return !(u.nombre && u.apellidos && u.correo && u.contraseña &&
+  return !(
+    u.nombre &&
+    u.apellidos &&
+    u.correo &&
+    u.contraseña &&
     comprobacionContraseña.value === u.contraseña &&
-    u.fechaNacimiento && aceptarTerminos.value)
+    u.fechaNacimiento &&
+    aceptarTerminos.value
+  )
 })
 
 async function registro() {
@@ -42,15 +47,13 @@ async function registro() {
 
 <template>
   <div class="col relative-position overflow-hidden">
-
     <div class="background-container">
       <img src="FondoAlimentosSeparados5.svg" class="bg-image" />
     </div>
 
     <div class="content-overlay column items-center q-pa-lg">
-
       <div class="column items-center q-mb-md">
-        <img src="/MyDish.svg" style="width: 230px; height: 80px;">
+        <img src="/MyDish.svg" style="width: 230px; height: 80px" />
         <div class="text-h4 text-black text-weight-light btn-font">
           <p>Registro de usuario</p>
         </div>
@@ -58,49 +61,104 @@ async function registro() {
 
       <q-form @submit.prevent="registro" class="full-width flex flex-center">
         <div class="form-card column q-gutter-y-md">
-
           <div class="column q-gutter-y-sm">
-            <q-input v-model="usuario.nombre" rounded filled label="Nombre" bg-color="white" color="purple" :rules="[
-              val => !!val || 'Campo obligatorio',
-              val => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras'
-            ]" />
-
-            <q-input v-model="usuario.apellidos" rounded filled label="Apellidos" bg-color="white" color="purple"
+            <q-input
+              v-model="usuario.nombre"
+              rounded
+              filled
+              label="Nombre"
+              bg-color="white"
+              color="purple"
               :rules="[
-              val => !!val || 'Campo obligatorio',
-              val => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras'
-            ]" />
+                (val) => !!val || 'Campo obligatorio',
+                (val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras',
+              ]"
+            />
 
-            <q-input v-model="usuario.correo" rounded filled label="Correo" bg-color="white" color="purple" lazy-rules :rules="[
-              val => !!val || 'Campo obligatorio',
-              val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Correo no válido'
-            ]" />
+            <q-input
+              v-model="usuario.apellidos"
+              rounded
+              filled
+              label="Apellidos"
+              bg-color="white"
+              color="purple"
+              :rules="[
+                (val) => !!val || 'Campo obligatorio',
+                (val) => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras',
+              ]"
+            />
 
-            <q-input v-model="usuario.contraseña" :type="esContraseña ? 'password' : 'text'" rounded filled
-              label="Contraseña" bg-color="white" color="purple" lazy-rules :rules="[
-                val => !!val || 'Campo obligatorio',
-                val => /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(val)
-                  || 'Debe tener 8 caracteres, una mayúscula, un número y un símbolo'
-              ]">
+            <q-input
+              v-model="usuario.correo"
+              rounded
+              filled
+              label="Correo"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[
+                (val) => !!val || 'Campo obligatorio',
+                (val) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Correo no válido',
+              ]"
+            />
+
+            <q-input
+              v-model="usuario.contraseña"
+              :type="esContraseña ? 'password' : 'text'"
+              rounded
+              filled
+              label="Contraseña"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[
+                (val) => !!val || 'Campo obligatorio',
+                (val) =>
+                  /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(val) ||
+                  'Debe tener 8 caracteres, una mayúscula, un número y un símbolo',
+              ]"
+            >
               <template #append>
-                <q-icon :name="esContraseña ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="esContraseña = !esContraseña" />
+                <q-icon
+                  :name="esContraseña ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="esContraseña = !esContraseña"
+                />
               </template>
             </q-input>
 
-            <q-input v-model="comprobacionContraseña" :type="esContraseñaConfirm ? 'password' : 'text'" rounded filled
-              label="Comprobación contraseña" bg-color="white" color="purple" lazy-rules :rules="[
-                val => !!val || 'Campo obligatorio',
-                val => val === usuario.contraseña || 'Las contraseñas no coinciden'
-              ]">
+            <q-input
+              v-model="comprobacionContraseña"
+              :type="esContraseñaConfirm ? 'password' : 'text'"
+              rounded
+              filled
+              label="Comprobación contraseña"
+              bg-color="white"
+              color="purple"
+              lazy-rules
+              :rules="[
+                (val) => !!val || 'Campo obligatorio',
+                (val) => val === usuario.contraseña || 'Las contraseñas no coinciden',
+              ]"
+            >
               <template #append>
-                <q-icon :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                  @click="esContraseñaConfirm = !esContraseñaConfirm" />
+                <q-icon
+                  :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'"
+                  class="cursor-pointer"
+                  @click="esContraseñaConfirm = !esContraseñaConfirm"
+                />
               </template>
             </q-input>
 
-            <q-input rounded filled v-model="usuario.fechaNacimiento" label="Fecha Nacimiento" bg-color="white" color="purple"
-              :rules="[val => !!val || 'Campo obligatorio']">
+            <q-input
+              rounded
+              filled
+              v-model="usuario.fechaNacimiento"
+              label="Fecha Nacimiento"
+              bg-color="white"
+              color="purple"
+              :rules="[(val) => !!val || 'Campo obligatorio']"
+            >
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
@@ -116,13 +174,31 @@ async function registro() {
           </div>
 
           <div class="row justify-start">
-            <q-checkbox v-model="aceptarTerminos" label="Aceptar términos y condiciones" color="purple" />
+            <q-checkbox
+              v-model="aceptarTerminos"
+              label="Aceptar términos y condiciones"
+              color="purple"
+            />
           </div>
 
-          <q-btn :class="[!deshabilitado ? 'boton-activo' : 'boton-inactivo']" label="Registrarse"
-            :disable="deshabilitado" type="submit" rounded size="lg" no-caps class="full-width" />
+          <q-btn
+            :class="[!deshabilitado ? 'boton-activo' : 'boton-inactivo']"
+            label="Registrarse"
+            :disable="deshabilitado"
+            type="submit"
+            rounded
+            size="lg"
+            no-caps
+            class="full-width"
+          />
 
-          <q-btn flat class="text-white q-mt-sm" label="¿Ya tienes cuenta? Inicia sesión" to="/login" no-caps />
+          <q-btn
+            flat
+            class="text-white q-mt-sm"
+            label="¿Ya tienes cuenta? Inicia sesión"
+            to="/login"
+            no-caps
+          />
         </div>
       </q-form>
     </div>

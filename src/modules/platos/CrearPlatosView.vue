@@ -71,7 +71,7 @@ function crearPlatoAleatorio() {
   plato.value.proteinas = obtenerAzar(alimentos.value.proteinas)
 }
 
-// función gguardar plato
+// Función gguardar plato
 const GuardarPlato = async () => {
   try {
     const idUsuario = usuarioStore.usuario?.idUsuario
@@ -117,24 +117,32 @@ onMounted(() => {
           <img src="/MyDish.svg" style="width: 230px; height: auto" />
           <div class="text-h4 text-title">
             <!-- v-if en caso de que está logado y existe un nombre-->
-            <span v-if="usuarioStore.usuario?.nombre" class="text-black q-mb-sm ">
+            <span v-if="usuarioStore.usuario?.nombre" class="text-black q-mb-sm">
               Hola, {{ usuarioStore.usuario.nombre }}, crea tu plato:
             </span>
           </div>
         </div>
 
         <div class="row items-center justify-center q-gutter-xl">
-          <!-- LADO IZQUIERDO: Selector de Vegetales -->
+          <!-- Vegetales -->
           <div class="col-auto btn-font">
-            <q-select v-model="plato.vegetales" :options="alimentos.vegetales" option-label="nombre" label="Vegetales"
-              filled rounded color="green-8" style="width: 220px">
+            <q-select
+              v-model="plato.vegetales"
+              :options="alimentos.vegetales"
+              option-label="nombre"
+              label="Vegetales"
+              filled
+              rounded
+              color="green-8"
+              style="width: 220px"
+            >
               <template v-slot:prepend>
                 <q-icon name="mdi-leaf" color="green-8" />
               </template>
             </q-select>
           </div>
 
-          <!-- CENTRO: El Plato SVG -->
+          <!-- Plato SVG -->
           <div class="col-auto">
             <svg :viewBox="`0 0 ${size} ${size}`" :width="size" :height="size" class="plato-svg">
               <defs>
@@ -145,35 +153,80 @@ onMounted(() => {
 
               <g clip-path="url(#circularMask)">
                 <!-- Se pinta de verde si hay vegetal seleccionado, si no, gris -->
-                <rect x="0" y="0" :width="size / 2" :height="size" :fill="plato.vegetales ? '#aed581' : '#e0e0e0'"
-                  class="transition-color" />
+                <rect
+                  x="0"
+                  y="0"
+                  :width="size / 2"
+                  :height="size"
+                  :fill="plato.vegetales ? '#aed581' : '#e0e0e0'"
+                  class="transition-color"
+                />
 
-                <!-- Se pinta de naranja para carbohidratos -->
-                <rect :x="size / 2" :y="size / 2" :width="size / 2" :height="size / 2"
-                  :fill="plato.carbohidratos ? '#ffd54f ' : '#eeeeee'" class="transition-color" />
+                <rect
+                  :x="size / 2"
+                  :y="size / 2"
+                  :width="size / 2"
+                  :height="size / 2"
+                  :fill="plato.carbohidratos ? '#ffd54f ' : '#eeeeee'"
+                  class="transition-color"
+                />
 
-                <!-- Se pinta de rojo para proteínas -->
-                <rect :x="size / 2" y="0" :width="size / 2" :height="size / 2"
-                  :fill="plato.proteinas ? '#e57373 ' : '#f5f5f5'" class="transition-color" />
+                <rect
+                  :x="size / 2"
+                  y="0"
+                  :width="size / 2"
+                  :height="size / 2"
+                  :fill="plato.proteinas ? '#e57373 ' : '#f5f5f5'"
+                  class="transition-color"
+                />
               </g>
 
-              <!-- Divisores blancos -->
               <line :x1="center" y1="0" :x2="center" :y2="size" stroke="white" stroke-width="3" />
-              <line :x1="center" :y1="center" :x2="size" :y2="center" stroke="white" stroke-width="3" />
-              <circle :cx="center" :cy="center" :r="radius" fill="none" stroke="#333" stroke-width="2" />
+              <line
+                :x1="center"
+                :y1="center"
+                :x2="size"
+                :y2="center"
+                stroke="white"
+                stroke-width="3"
+              />
+              <circle
+                :cx="center"
+                :cy="center"
+                :r="radius"
+                fill="none"
+                stroke="#333"
+                stroke-width="2"
+              />
             </svg>
           </div>
 
-          <!-- LADO DERECHO: Selectores de Carbohidratos y Proteínas -->
+          <!-- Carbohidratos y Proteínas -->
           <div class="col-auto column q-gutter-y-md btn-font">
-            <q-select v-model="plato.proteinas" :options="alimentos.proteinas" option-label="nombre" label="Proteínas"
-              filled rounded color="red-8" style="width: 220px">
+            <q-select
+              v-model="plato.proteinas"
+              :options="alimentos.proteinas"
+              option-label="nombre"
+              label="Proteínas"
+              filled
+              rounded
+              color="red-8"
+              style="width: 220px"
+            >
               <template v-slot:prepend>
                 <q-icon name="mdi-food-drumstick" color="red-8" />
               </template>
             </q-select>
-            <q-select v-model="plato.carbohidratos" :options="alimentos.carbohidratos" option-label="nombre"
-              label="Carbohidratos" filled rounded color="amber-8" style="width: 220px">
+            <q-select
+              v-model="plato.carbohidratos"
+              :options="alimentos.carbohidratos"
+              option-label="nombre"
+              label="Carbohidratos"
+              filled
+              rounded
+              color="amber-8"
+              style="width: 220px"
+            >
               <template v-slot:prepend>
                 <q-icon name="grain" color="amber-8" />
               </template>
@@ -182,17 +235,38 @@ onMounted(() => {
         </div>
 
         <div class="col-auto column q-gutter-y-md">
-          <q-input v-model="plato.nombrePlato" rounded filled label="Nombre del plato" class="full-width" />
+          <q-input
+            v-model="plato.nombrePlato"
+            rounded
+            filled
+            label="Nombre del plato"
+            class="full-width"
+          />
           <!-- Botón guardar -->
-          <q-btn :disable="!platoCompleto" :class="[
-            'btn-font',
-            'custom-btn',
-            platoCompleto ? 'boton-activo glossy' : 'boton-inactivo',
-          ]" label="Guardar Plato" rounded size="lg" no-caps @click="GuardarPlato" />
+          <q-btn
+            :disable="!platoCompleto"
+            :class="[
+              'btn-font',
+              'custom-btn',
+              platoCompleto ? 'boton-activo glossy' : 'boton-inactivo',
+            ]"
+            label="Guardar Plato"
+            rounded
+            size="lg"
+            no-caps
+            @click="GuardarPlato"
+          />
 
           <!-- Botón Aleatorio -->
-          <q-btn label="Crear plato aleatorio" class="btn-font custom-btn text-black" @click="crearPlatoAleatorio"
-            rounded size="lg" no-caps height="" />
+          <q-btn
+            label="Crear plato aleatorio"
+            class="btn-font custom-btn text-black"
+            @click="crearPlatoAleatorio"
+            rounded
+            size="lg"
+            no-caps
+            height=""
+          />
         </div>
       </div>
     </div>

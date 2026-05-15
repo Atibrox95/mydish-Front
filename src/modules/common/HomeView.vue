@@ -2,22 +2,38 @@
 import { useUsuarioStore } from '../../stores/usuarioStore'
 const userStore = useUsuarioStore()
 const isLoggedIn = userStore.usuario
-const nombreUsuario = userStore.usuario?.nombre;
+const nombreUsuario = userStore.usuario?.nombre
 </script>
 
 <template>
   <div class="main-container flex flex-center">
     <div class="background-wrapper">
-      <img src="FondoAlimentos.svg" class="bg-image">
+      <img src="FondoAlimentos.svg" class="bg-image" />
     </div>
 
     <div class="content-card q-pa-xl">
       <div>
         <div v-if="!isLoggedIn" class="column q-gutter-y-md">
-          <q-btn class="btn-inicioSesión btn-font boton-glass" label="Iniciar Sesión" to="/login" rounded size="lg"
-            no-caps unelevated />
-          <q-btn class="btn-registro btn-font boton-secundario-glass" color="white" text-color="black"
-            label="Crear cuenta nueva" rounded size="lg" to="/registro" no-caps unelevated />
+          <q-btn
+            class="btn-inicioSesión btn-font boton-glass"
+            label="Iniciar Sesión"
+            to="/login"
+            rounded
+            size="lg"
+            no-caps
+            unelevated
+          />
+          <q-btn
+            class="btn-registro btn-font boton-secundario-glass"
+            color="white"
+            text-color="black"
+            label="Crear cuenta nueva"
+            rounded
+            size="lg"
+            to="/registro"
+            no-caps
+            unelevated
+          />
         </div>
         <div v-else class="text-bienvenida-container q-mb-sm">
           <div v-if="userStore.usuario?.nombre" class="text-wrapper">
@@ -43,7 +59,11 @@ const nombreUsuario = userStore.usuario?.nombre;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  font-family:
+    'Inter',
+    system-ui,
+    -apple-system,
+    sans-serif;
 }
 
 .text-wrapper {
@@ -110,7 +130,8 @@ const nombreUsuario = userStore.usuario?.nombre;
 }
 
 .btn-font {
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  font-family:
+    'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   font-weight: bolder;
 }
 
@@ -145,7 +166,7 @@ const nombreUsuario = userStore.usuario?.nombre;
   padding: 60px 40px;
   width: 90%;
   max-width: 500px;
-  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2)
+  box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
 }
 
 .btn-hover:hover,

@@ -10,11 +10,6 @@ const router = createRouter({
       name: 'home',
       component: HomeView,
     },
-    // {
-    //   path: '/alimentos',
-    //   name: 'alimentos',
-    //   component: () => import('../modules/alimentos/AlimentosView.vue'),
-    // },
     {
       path: '/login',
       name: 'login',
@@ -43,7 +38,7 @@ const router = createRouter({
   ],
 })
 
-// Vamos a crear un "navegation guard" para que no deje movernos por ciertas paginas  ---
+// Vamos a crear un "navegation guard" para que no deje movernos por ciertas paginas
 router.beforeEach((to, from, next) => {
   const usuarioStore = useUsuarioStore()
 
@@ -54,11 +49,10 @@ router.beforeEach((to, from, next) => {
   const esRutaPublica = rutasPublicas.includes(to.name)
   const estaLogueado = usuarioStore.usuario !== null
 
-  //
   if (!esRutaPublica && !estaLogueado) {
     next({ name: 'login' })
   } else if (estaLogueado && (to.name === 'login' || to.name === 'registro')) {
-    // OPCIONAL: Si ya está logueado e intenta ir a login o registro -> Al Home o Crear Platos
+    // Si ya está logueado e intenta ir a login o registro -> Al Home o Crear Platos
     next({ name: 'crear_platos' })
   } else {
     // En cualquier otro caso -> Permitir el paso

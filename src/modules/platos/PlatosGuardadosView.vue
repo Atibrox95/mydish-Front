@@ -1,34 +1,29 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useUsuarioStore } from '@/stores/usuarioStore';
+import { useUsuarioStore } from '@/stores/usuarioStore'
 import platoService from '../platos/services/plato_service'
 import { useQuasar } from 'quasar'
 
-
-const usuarioStore = useUsuarioStore();
-const platos = ref([]);
+const usuarioStore = useUsuarioStore()
+const platos = ref([])
 const $q = useQuasar()
 
-
 async function cargarPlatos() {
-  // Obtenemos el ID del store de Pinia
-  console.log(usuarioStore.usuario);
-  const idUsuario = usuarioStore.usuario?.idUsuario;
+  const idUsuario = usuarioStore.usuario?.idUsuario
 
   if (idUsuario) {
-    const response = await platoService.recuperarPlatos(idUsuario);
-    platos.value = response.data;
-    // Asignamos la lista que devuelve el controller de Java
+    const response = await platoService.recuperarPlatos(idUsuario)
+    platos.value = response.data
   }
 }
 
 function getIconParams(tipo) {
   const icons = {
-    1: { icon: "mdi-food-drumstick", color: "red-8" },
-    2: { icon: "mdi-leaf", color: "green-8" },
-    3: { icon: "grain", color: "yellow-8" }
+    1: { icon: 'mdi-food-drumstick', color: 'red-8' },
+    2: { icon: 'mdi-leaf', color: 'green-8' },
+    3: { icon: 'grain', color: 'yellow-8' },
   }
-  return icons[tipo];
+  return icons[tipo]
 }
 
 async function eliminarPlato(idPlato) {
@@ -39,29 +34,31 @@ async function eliminarPlato(idPlato) {
     persistent: true,
     ok: { label: 'Borrar', color: 'negative', flat: true },
   }).onOk(async () => {
-  await platoService.borrarPlato(idPlato);
-  const index = platos.value.findIndex(plato => plato.idPlato === idPlato);
-  platos.value.splice(index, 1);
-});
+    await platoService.borrarPlato(idPlato)
+    const index = platos.value.findIndex((plato) => plato.idPlato === idPlato)
+    platos.value.splice(index, 1)
+  })
 
-
-//Vue componentes tienen ciclo de vida, onMounted es un ciclo en el que se "montan" componentes.
+  //Vue componentes tienen ciclo de vida, onMounted es un ciclo en el que se "montan" componentes.
 }
 onMounted(() => {
-  cargarPlatos();
+  cargarPlatos()
 })
 </script>
 
 <template>
   <div class="main-container">
     <div class="background-wrapper">
-      <img src="FondoAlimentos.svg" class="bg-image">
+      <img src="FondoAlimentos.svg" class="bg-image" />
     </div>
 
     <div class="content-overlay q-pa-md">
       <h1 class="text-h4 q-mb-md text-weight-light text-title text-center">Mis Platos Guardados</h1>
 
-      <div v-if="platos.length === 0" class="text-h4 q-mb-md text-weight-light text-black text-title text-center">
+      <div
+        v-if="platos.length === 0"
+        class="text-h4 q-mb-md text-weight-light text-black text-title text-center"
+      >
         <q-icon name="no_food" size="60px" color="grey-5" />
         <p class="text-grey-7">Aún no tienes platos guardados.</p>
       </div>
@@ -78,17 +75,33 @@ onMounted(() => {
             <q-separator />
             <q-card-section align="left">
               <div v-for="alimento in plato.alimentos" :key="alimento.nombre">
-                <div class="text-h6 q-mb-sm text-weight-light text-black text-title text-capitalize">
-                  <q-icon :name="getIconParams(alimento.idTipo).icon" size="50px"
-                    :color="getIconParams(alimento.idTipo).color" />
+                <div
+                  class="text-h6 q-mb-sm text-weight-light text-black text-title text-capitalize"
+                >
+                  <q-icon
+                    :name="getIconParams(alimento.idTipo).icon"
+                    size="50px"
+                    :color="getIconParams(alimento.idTipo).color"
+                  />
                   {{ alimento.nombre || 'Sin alimento' }}
                 </div>
               </div>
             </q-card-section>
             <q-card-actions align="right">
-              <q-btn flat round color="negative" icon="delete" @click="eliminarPlato(plato.idPlato)" />
-              <q-btn flat round color="primary" icon="edit"
-                :to="{ name: 'crearPlatos', params: { id: plato.idPlato } }" />
+              <q-btn
+                flat
+                round
+                color="negative"
+                icon="delete"
+                @click="eliminarPlato(plato.idPlato)"
+              />
+              <q-btn
+                flat
+                round
+                color="primary"
+                icon="edit"
+                :to="{ name: 'crearPlatos', params: { id: plato.idPlato } }"
+              />
             </q-card-actions>
           </q-card>
         </div>

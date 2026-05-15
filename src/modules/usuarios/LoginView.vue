@@ -3,14 +3,14 @@ import { ref, computed } from 'vue'
 import usuariosService from './services/usuarios_service'
 import { useRouter } from 'vue-router'
 import { useUsuarioStore } from '../../stores/usuarioStore'
-import { useQuasar } from 'quasar';
+import { useQuasar } from 'quasar'
 
 const router = useRouter()
 const usuarioStore = useUsuarioStore()
 const correo = ref()
 const contraseña = ref()
 const esContraseña = ref(true)
-const $q = useQuasar();
+const $q = useQuasar()
 
 const deshabilitado = computed(() => !(correo.value && contraseña.value))
 
@@ -25,11 +25,11 @@ async function iniciarSesion() {
     })
     router.push({ name: 'crearPlatos' })
   } catch (error) {
-    console.error("Error en el login:", error.response?.data || error.message)
+    console.error('Error en el login:', error.response?.data || error.message)
     $q.notify({
       type: 'negative',
       message: '¡Usuario o contraseña incorrectos!',
-      icon: 'close'
+      icon: 'close',
     })
   }
 }
@@ -38,12 +38,12 @@ async function iniciarSesion() {
 <template>
   <div class="main-layout relative-position overflow-hidden">
     <div class="background-container">
-      <img src="FondoAlimentosSeparados6.svg" class="bg-image">
+      <img src="FondoAlimentosSeparados6.svg" class="bg-image" />
     </div>
 
     <div class="content-overlay column items-center justify-center q-pa-md">
       <div class="column items-center q-mb-lg">
-        <img src="/MyDish.svg" style="width: 300px; height: auto;">
+        <img src="/MyDish.svg" style="width: 300px; height: auto" />
         <div class="text-h4 text-black text-weight-bold btn-font">
           <p>Inicio de sesión</p>
         </div>
@@ -52,31 +52,64 @@ async function iniciarSesion() {
       <!-- Formulario -->
       <q-form @submit.prevent="iniciarSesion" class="form-card">
         <div class="column q-gutter-y-md">
-          <q-input v-model="correo" rounded filled bg-color="white" label="Correo electrónico" class="btn-font" color="purple">
+          <q-input
+            v-model="correo"
+            rounded
+            filled
+            bg-color="white"
+            label="Correo electrónico"
+            class="btn-font"
+            color="purple"
+          >
             <template #prepend>
               <q-icon name="mail" color="deep-purple-5" />
             </template>
           </q-input>
-          <q-input v-model="contraseña" rounded filled bg-color="white" :type="esContraseña ? 'password' : 'text'"
-            label="Contraseña" class="btn-font" color="purple">
+          <q-input
+            v-model="contraseña"
+            rounded
+            filled
+            bg-color="white"
+            :type="esContraseña ? 'password' : 'text'"
+            label="Contraseña"
+            class="btn-font"
+            color="purple"
+          >
             <template #prepend>
               <q-icon name="lock" color="deep-purple-5" />
             </template>
             <template #append>
-              <q-icon :name="esContraseña ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-                @click="esContraseña = !esContraseña" />
+              <q-icon
+                :name="esContraseña ? 'visibility_off' : 'visibility'"
+                class="cursor-pointer"
+                @click="esContraseña = !esContraseña"
+              />
             </template>
           </q-input>
 
           <div class="column q-gutter-y-sm q-mt-md">
-
             <!-- Botón iniciar sesión -->
-            <q-btn :class="[!deshabilitado ? 'boton-activo glossy' : 'boton-inactivo']" label="Entrar"
-              :disable="deshabilitado" type="submit" rounded size="lg" no-caps class="full-width" />
+            <q-btn
+              :class="[!deshabilitado ? 'boton-activo glossy' : 'boton-inactivo']"
+              label="Entrar"
+              :disable="deshabilitado"
+              type="submit"
+              rounded
+              size="lg"
+              no-caps
+              class="full-width"
+            />
 
             <!-- Botón crear cuenta -->
-            <q-btn class="btn-font text-black bg-white" label="Crear una cuenta nueva" to="/registro" rounded size="md"
-              no-caps flat />
+            <q-btn
+              class="btn-font text-black bg-white"
+              label="Crear una cuenta nueva"
+              to="/registro"
+              rounded
+              size="md"
+              no-caps
+              flat
+            />
           </div>
         </div>
       </q-form>
