@@ -34,15 +34,24 @@ const deshabilitado = computed(() => {
 })
 
 async function registro() {
-  const respuesta = await usuariosService.registro(usuario.value)
-  usuarioStore.setUsuario(respuesta.data)
-  $q.notify({
-    type: 'positive',
-    message: '¡Usuario registrado con éxito!',
-    icon: 'check',
-  })
-  router.push({ name: 'crearPlatos' })
+  try {
+    const respuesta = await usuariosService.registro(usuario.value)
+    usuarioStore.setUsuario(respuesta.data)
+    $q.notify({
+      type: 'positive',
+      message: '¡Usuario registrado con éxito!',
+      icon: 'check',
+    })
+    router.push({ name: 'crearPlatos' })
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Este correo ya está en uso',
+      icon: 'error',
+    })
+  }
 }
+
 </script>
 
 <template>
