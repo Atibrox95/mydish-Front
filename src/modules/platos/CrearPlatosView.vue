@@ -47,6 +47,7 @@ async function cargarDatosDelPlato() {
       const platoEncontrado = response.data
 
       if (platoEncontrado) {
+        plato.value.nombrePlato = platoEncontrado.nombrePlato
         // Mapeamos los alimentos por su idTipo
         plato.value.proteinas = platoEncontrado.alimentos.find((a) => a.idTipo === 1)
         plato.value.vegetales = platoEncontrado.alimentos.find((a) => a.idTipo === 2)
