@@ -23,8 +23,8 @@ app.use(Quasar, {
   },
   config: {
     notify: {
-      position: 'top',
-      timeout: 2500,
+      position: 'left',
+      timeout: 1500,
       textColor: 'white'
     },
     iconSet: 'mdi-v5',

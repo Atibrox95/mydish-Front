@@ -8,7 +8,6 @@ async function recuperar() {
   alimentos.value = (await alimentosService.recuperar()).data;
 }
 
-
 </script>
 <template>
   <h1>Hola</h1>

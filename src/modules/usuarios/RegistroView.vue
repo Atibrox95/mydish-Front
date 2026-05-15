@@ -1,14 +1,18 @@
-<!-- Vista de lo que será la página -->
 <script setup>
-//Imports
 import { ref, computed, unref } from 'vue'
 import usuariosService from '../usuarios/services/usuarios_service'
 import { useUsuarioStore } from '../../stores/usuarioStore'
+import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
 
-//Constantes
+
+const router = useRouter()
 const aceptarTerminos = ref(false)
 const usuarioStore = useUsuarioStore()
-const comprobacionContraseña = ref();
+const comprobacionContraseña = ref('')
+const esContraseña = ref(true)
+const esContraseñaConfirm = ref(true)
+const $q = useQuasar()
 const usuario = ref({
   nombre: '',
   apellidos: '',
@@ -16,117 +20,161 @@ const usuario = ref({
   contraseña: '',
   fechaNacimiento: ''
 })
-const esContraseña = ref(true)
-const esContraseñaConfirm = ref(true)
+
 const deshabilitado = computed(() => {
-  const usuarioUnref = unref(usuario);
-  return !(usuarioUnref.nombre && usuarioUnref.apellidos && usuarioUnref.correo && usuarioUnref.contraseña && comprobacionContraseña.value && usuarioUnref.fechaNacimiento && aceptarTerminos.value)
-});
-//funciones
+  const u = unref(usuario)
+  return !(u.nombre && u.apellidos && u.correo && u.contraseña &&
+    comprobacionContraseña.value === u.contraseña &&
+    u.fechaNacimiento && aceptarTerminos.value)
+})
 
 async function registro() {
   const respuesta = await usuariosService.registro(usuario.value)
   usuarioStore.setUsuario(respuesta.data)
-
+  $q.notify({
+    type: 'positive',
+    message: '¡Usuario registrado con éxito!',
+    icon: 'check',
+  })
+  router.push({ name: 'crearPlatos' })
 }
 </script>
 
-<!-- ref="" dentro de cualquier elemento del html (template)
- es una referencia a ese elemento -->
-
 <template>
-  <div class="column items-center q-mb-md">
-    <img src="/MyDish.svg" style="width: 300px; height: auto;">
-    <div class="text-h4 text-black text-weight-bold btn-font">
-      <p>Registro de usuario</p>
+  <div class="col relative-position overflow-hidden">
+
+    <div class="background-container">
+      <img src="FondoAlimentosSeparados5.svg" class="bg-image" />
+    </div>
+
+    <div class="content-overlay column items-center q-pa-lg">
+
+      <div class="column items-center q-mb-md">
+        <img src="/MyDish.svg" style="width: 230px; height: 80px;">
+        <div class="text-h4 text-black text-weight-light btn-font">
+          <p>Registro de usuario</p>
+        </div>
+      </div>
+
+      <q-form @submit.prevent="registro" class="full-width flex flex-center">
+        <div class="form-card column q-gutter-y-md">
+
+          <div class="column q-gutter-y-sm">
+            <q-input v-model="usuario.nombre" rounded filled label="Nombre" bg-color="white" color="purple" :rules="[
+              val => !!val || 'Campo obligatorio',
+              val => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras'
+            ]" />
+
+            <q-input v-model="usuario.apellidos" rounded filled label="Apellidos" bg-color="white" color="purple"
+              :rules="[
+              val => !!val || 'Campo obligatorio',
+              val => /^[\p{L}\s]+$/u.test(val) || 'Solo debe contener letras'
+            ]" />
+
+            <q-input v-model="usuario.correo" rounded filled label="Correo" bg-color="white" color="purple" lazy-rules :rules="[
+              val => !!val || 'Campo obligatorio',
+              val => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val) || 'Correo no válido'
+            ]" />
+
+            <q-input v-model="usuario.contraseña" :type="esContraseña ? 'password' : 'text'" rounded filled
+              label="Contraseña" bg-color="white" color="purple" lazy-rules :rules="[
+                val => !!val || 'Campo obligatorio',
+                val => /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(val)
+                  || 'Debe tener 8 caracteres, una mayúscula, un número y un símbolo'
+              ]">
+              <template #append>
+                <q-icon :name="esContraseña ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                  @click="esContraseña = !esContraseña" />
+              </template>
+            </q-input>
+
+            <q-input v-model="comprobacionContraseña" :type="esContraseñaConfirm ? 'password' : 'text'" rounded filled
+              label="Comprobación contraseña" bg-color="white" color="purple" lazy-rules :rules="[
+                val => !!val || 'Campo obligatorio',
+                val => val === usuario.contraseña || 'Las contraseñas no coinciden'
+              ]">
+              <template #append>
+                <q-icon :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'" class="cursor-pointer"
+                  @click="esContraseñaConfirm = !esContraseñaConfirm" />
+              </template>
+            </q-input>
+
+            <q-input rounded filled v-model="usuario.fechaNacimiento" label="Fecha Nacimiento" bg-color="white" color="purple"
+              :rules="[val => !!val || 'Campo obligatorio']">
+              <template v-slot:append>
+                <q-icon name="event" class="cursor-pointer">
+                  <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                    <q-date v-model="usuario.fechaNacimiento" mask="YYYY-MM-DD">
+                      <div class="row items-center justify-end">
+                        <q-btn v-close-popup label="Cerrar" color="primary" flat />
+                      </div>
+                    </q-date>
+                  </q-popup-proxy>
+                </q-icon>
+              </template>
+            </q-input>
+          </div>
+
+          <div class="row justify-start">
+            <q-checkbox v-model="aceptarTerminos" label="Aceptar términos y condiciones" color="purple" />
+          </div>
+
+          <q-btn :class="[!deshabilitado ? 'boton-activo' : 'boton-inactivo']" label="Registrarse"
+            :disable="deshabilitado" type="submit" rounded size="lg" no-caps class="full-width" />
+
+          <q-btn flat class="text-white q-mt-sm" label="¿Ya tienes cuenta? Inicia sesión" to="/login" no-caps />
+        </div>
+      </q-form>
     </div>
   </div>
-
-  <q-form method="POST" class="flex flex-center q-pa-lg">
-    <div class="registro-container column q-gutter-y-md" style="width: 100%; max-width: 500px; margin-top: -40px;">
-      <div class="column q-gutter-y-sm">
-        <q-input v-model="usuario.nombre" rounded filled label="Nombre" class="full-width" />
-        <q-input v-model="usuario.apellidos" rounded filled label="Apellidos" class="full-width" />
-        <q-input v-model="usuario.correo" rounded filled label="Correo" class="full-width" />
-
-        <q-input v-model="usuario.contraseña" :type="esContraseña ? 'password' : 'text'" rounded filled
-          label="Contraseña" class="full-width">
-          <template #append>
-            <q-icon :name="esContraseña ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-              @click="esContraseña = !esContraseña" />
-          </template>
-        </q-input>
-
-        <q-input v-model="comprobacionContraseña" :type="esContraseñaConfirm ? 'password' : 'text'" rounded filled
-          label="Comprobación contraseña" class="full-width">
-          <template #append>
-            <q-icon :name="esContraseñaConfirm ? 'visibility_off' : 'visibility'" class="cursor-pointer"
-              @click="esContraseñaConfirm = !esContraseñaConfirm" />
-          </template>
-        </q-input>
-
-        <q-input rounded filled v-model="usuario.fechaNacimiento" label="Fecha Nacimiento" class="full-width">
-          <template v-slot:append>
-            <q-icon name="event" class="cursor-pointer">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date v-model="usuario.fechaNacimiento" mask="YYYY-MM-DD">
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Close" color="primary" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-      </div>
-
-      <div class="row justify-start">
-        <q-checkbox right-label v-model="aceptarTerminos" label="I agree" checked-icon="task_alt"
-          unchecked-icon="highlight_off" />
-      </div>
-
-      <q-btn :class="[
-        'btn-font',
-        'custom-btn',
-        !deshabilitado ? 'boton-activo glossy' : 'boton-inactivo',
-      ]" label="Entrar" :disable="deshabilitado" @click="registro" rounded size="lg" no-caps />
-      <q-btn flat class="btn-font text-white" label="Crear una cuenta nueva" to="/registro" no-caps />
-
-
-      <!-- <q-btn color="primary" label="Registrarse" :disable="deshabilitado" @click="registro" class="full-width q-py-sm"
-        rounded /> -->
-    </div>
-  </q-form>
 </template>
 
-<style>
-/* .btn-font {
-  font-family: Georgia, 'Times New Roman', Times, serif;
-} */
-
-.custom-btn {
-  background-color: white;
-  color: #673ab7;
-  transition: all 0.3s ease;
+<style scoped>
+.background-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
-.boton-inactivo {
-  background: rgba(150, 150, 150, 0.5) !important;
-  color: rgba(255, 255, 255, 0.6) !important;
-  cursor: not-allowed;
-  transition: all 0.5s ease;
+.bg-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease-in-out;
+}
+
+.content-overlay {
+  position: relative;
+  z-index: 1;
+  min-height: 100vh;
+}
+
+.form-card {
+  width: 100%;
+  max-width: 500px;
 }
 
 .boton-activo {
   background: linear-gradient(45deg, #673ab7, #9c27b0) !important;
   color: white !important;
-  transform: scale(1.02);
+  transition: transform 0.2s;
   box-shadow: 0 4px 15px rgba(103, 58, 183, 0.4);
 }
 
-.custom-btn:disabled {
-  opacity: 0.6;
-  background-color: #e0e0e0 !important;
-  color: black !important;
+.boton-activo:hover {
+  transform: scale(1.02);
+}
+
+.boton-inactivo {
+  background: rgba(150, 150, 150, 0.5) !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  cursor: not-allowed;
+}
+
+.btn-font {
+  font-family: Georgia, 'Times New Roman', Times, serif;
 }
 </style>

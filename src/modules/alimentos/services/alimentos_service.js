@@ -5,5 +5,4 @@ const API_URL = 'http://localhost:8080/alimentos';
 export default {
   recuperar: async () => axios.get('http://localhost:8080/alimentos'),
   recuperarPorTipo: async (idTipo) => axios.get(`${API_URL}/tipo/${idTipo}`)
-
 }

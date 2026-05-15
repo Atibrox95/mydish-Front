@@ -14,7 +14,6 @@ export const useUsuarioStore = defineStore('usuario', {
     setUsuario(datos) {
       this.usuario = datos;
 
-
       if (datos) {
         localStorage.setItem('usuario_dish', JSON.stringify(datos));
       } else {
